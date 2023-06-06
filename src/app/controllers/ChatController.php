@@ -26,5 +26,6 @@ class ChatController extends Controller
     {
         session_unset();
         session_destroy();
+        $this->response->redirect('/index/');
     }
 }
