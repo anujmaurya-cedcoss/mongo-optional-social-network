@@ -6,6 +6,7 @@ use Phalcon\Mvc\View;
 use Phalcon\Mvc\Application;
 use Phalcon\Url;
 use Phalcon\Config;
+use handler\Listener\Listener;
 
 $config = new Config([]);
 
@@ -23,6 +24,10 @@ $loader->registerDirs(
         APP_PATH . "/controllers/",
     ]
 );
+
+$loader->registerNamespaces([
+    "handler\Listener" => APP_PATH . "/handlers/",
+]);
 
 $loader->register();
 
@@ -59,6 +64,15 @@ $container->set(
 );
 
 $application = new Application($container);
+$eventsManager = $container->get('eventsManager');
+
+$eventsManager->attach(
+    'application:beforeHandleRequest',
+    new Listener()
+);
+$container->set('EventsManager', $eventsManager);
+$application->setEventsManager($eventsManager);
+
 
 // injecting response
 $container->set(
